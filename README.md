@@ -1,18 +1,18 @@
 In this code we explore possibilities of optimizations of single thread binary search on a large sorted array. Therefore, our implementation is trying to improve code like this:
 
 ```cpp
-int binarySearch_basic(size_t item_count, const Type arr[], int search)
-{
-	int l = 0;
-	int r = item_count - 1;
-	while (l <= r) {
-		int m = l + ((r - l) >> 1);
-		if (arr[m] == search) return m;
-		if (arr[m] < search) l = m + 1;
-		else r = m - 1;
+	int binarySearch_basic(size_t item_count, const Type arr[], int search)
+	{
+		int l = 0;
+		int r = item_count - 1;
+		while (l <= r) {
+			int m = l + ((r - l) >> 1);
+			if (arr[m] == search) return m;
+			if (arr[m] < search) l = m + 1;
+			else r = m - 1;
+		}
+		return -1;
 	}
-	return -1;
-}
 ```
 
 The whole idea is based on the assumption that the array is large; therefore, the data can not fit into L2 cache. The algorithm inevitably leads an L2 CPU cache misses and the algorithm stalls. If we repeatedly run the code some items are accessed frequently (e.g. the middle item), and they will stay in the CPU cache, but most of the data is accessed randomly, and the program will suffer from DRAM read wait.
@@ -22,7 +22,7 @@ The whole idea is based on the assumption that the array is large; therefore, th
 The most straightforward idea is to use prefetching during every iteration. We access the items on both sides of item `m` at the beginning of each iteration. 
 
 ```cpp
-    ...
+	...
 	while (l <= r) {
 		int m1 = arr[l + ((r - l) >> 2)];
 		int m2 = arr[r - ((r - l) >> 2)];
@@ -62,7 +62,7 @@ int binarySearch_duo(size_t item_count, const Type arr[], int search)
 		}
 	}
 
-    // the sequential search of the short interval
+	// the sequential search of the short interval
 	for (int i = l; i <= r; i++)
 	{
 		if (arr[i] == search) return i;
@@ -76,6 +76,4 @@ In order to avoid algorithm pitfalls that come from cutting the interval in thre
 
 ## Conclusion
 
-Using the algorithm reading two items per iteration we obtain a solution that is 25% faster than the original one! Reading three items per iteration improve the original algorithm by 33% on our computer. This type of optimization is obviously hardware specific and it can not be done infinitely. However, as we can see the improvement of such a simple algorithm can be quite significant if the data are not in the CPU cache.
-
-Let us mention that we do not have such a large array to face L2 cache miss waits. We may access much smaller arrays in our algorithms and still face the L2 cache misses if the data are not in the CPU cache. In such a case, this type of optimization can be still very useful.
+Using the algorithm reading two items per iteration we obtain a solution that is slightly faster than the basic one on Visual Studio 2017 C++ compiler. Reading three items per iteration brings another slight improvement. This type of optimization is obviously hardware specific. 

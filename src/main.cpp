@@ -8,7 +8,7 @@
 constexpr int64_t line_count = 15000000;
 constexpr size_t CACHE_LINE_SIZE = 64;
 using Type = int64_t;
-constexpr int64_t test_size= 100000;
+constexpr int64_t test_size= 500000;
 
 //#define TEST_RESULT_CORRECTNESS
 
@@ -128,7 +128,7 @@ int binarySearch_trio(size_t item_count, const Type arr[], int search)
 {
 	int l = 0;
 	int r = item_count - 1;
-	while (r - l > 15) {
+	while (r - l > 7) {
 
 		int delta = (r - l) >> 2;
 		int m1 = l + delta;
@@ -207,8 +207,8 @@ int main()
 	result3.reserve(test.size());
 #endif
 
-	int(*f[4])(size_t, const Type*, int) = { &binarySearch_basic, &binarySearch_prefetch, &binarySearch_duo, &binarySearch_trio };
-	std::vector<std::string> algo = { "Basic", "Prefetch", "Duo", "Trio" };
+	int(*f[4])(size_t, const Type*, int) = { &binarySearch_prefetch, &binarySearch_duo, &binarySearch_trio, &binarySearch_basic };
+	std::vector<std::string> algo = { "Prefetch", "Duo", "Trio", "Basic" };
 
 	for (auto fn = 0; fn < 4; fn++)
 	{
