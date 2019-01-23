@@ -1,4 +1,4 @@
-In this code we explore possibilities of optimizations of single-core binary search on a large sorted array. Therefore, our implementation is trying to improve code like this:
+In this code we explore possibilities of optimizations of single thread binary search on a large sorted array. Therefore, our implementation is trying to improve code like this:
 
 ```cpp
 int binarySearch_basic(size_t item_count, const Type arr[], int search)
@@ -15,22 +15,25 @@ int binarySearch_basic(size_t item_count, const Type arr[], int search)
 }
 ```
 
-The whole idea is based on the assumption that the array is large; therefore, the data can not fit into L2 cache. The algorithm inevitably leads an L2 cache misses during the function call. If we repeatedly run the code some items are accessed frequently (i.e. the middle item), and they will stay in the CPU cache, but most of the data is accessed randomly, and the program will suffer from DRAM read wait.
+The whole idea is based on the assumption that the array is large; therefore, the data can not fit into L2 cache. The algorithm inevitably leads an L2 CPU cache misses and the algorithm stalls. If we repeatedly run the code some items are accessed frequently (e.g. the middle item), and they will stay in the CPU cache, but most of the data is accessed randomly, and the program will suffer from DRAM read wait.
 
 ## Prefetching
 
-The most straightforward idea is to use prefetching. We access the items on both sides of item `m` at the beginning of each cycle.
+The most straightforward idea is to use prefetching during every iteration. We access the items on both sides of item `m` at the beginning of each iteration. 
 
 ```cpp
+    ...
+	while (l <= r) {
 		int m1 = arr[l + ((r - l) >> 2)];
 		int m2 = arr[r - ((r - l) >> 2)];
+		...
 ```
 
 It may bring certain improvement; however, it is not very significant.
 
 ## Hiding CPU cache misses
 
-Another technique does more memory accesses per iteration. The problematic DRAM memory reads are then optimized by the CPU and they in turn overlap. Let us start with two items per iteration:
+Another technique does more memory accesses per iteration. The problematic DRAM memory reads are then optimized by the CPU and they in turn overlap. Let us show the idea on a example with two item reads per iteration:
 
 ```cpp
 int binarySearch_duo(size_t item_count, const Type arr[], int search)
@@ -73,4 +76,6 @@ In order to avoid algorithm pitfalls that come from cutting the interval in thre
 
 ## Conclusion
 
-Using the algorithm reading two items per iteration we obtain a solution that is 25% faster than the original one. Reading three items per iteration improve the original algorithm by 33% on our computer. This type of optimization is obviously hardware specific and it can not be done infinitely. However, as we can see the improvement of such a simple algorithm can be quite significant.
+Using the algorithm reading two items per iteration we obtain a solution that is 25% faster than the original one! Reading three items per iteration improve the original algorithm by 33% on our computer. This type of optimization is obviously hardware specific and it can not be done infinitely. However, as we can see the improvement of such a simple algorithm can be quite significant if the data are not in the CPU cache.
+
+Let us mention that we do not have such a large array to face L2 cache miss waits. We may access much smaller arrays in our algorithms and still face the L2 cache misses if the data are not in the CPU cache. In such a case, this type of optimization can be still very useful.
