@@ -73,4 +73,4 @@ In order to avoid algorithm pitfalls that come from cutting the interval in thre
 
 ## Conclusion
 
-Using the algorithm reading two items per iteration we obtain a solution that is 25% faster than the original one. Reading three items per iteration improve the original algorithm by 30%.
+Using the algorithm reading two items per iteration we obtain a solution that is 25% faster than the original one. Reading three items per iteration improve the original algorithm by 33% on our computer. This type of optimization is obviously hardware specific and it can not be done infinitely. However, as we can see the improvement of such a basic algorithm can be more than insignificant.
