@@ -30,7 +30,7 @@ It may bring certain improvement; however, it is not very significant.
 
 ## Hiding CPU cache misses
 
-Another technique does more memory accesses per iteration. The CPU then optimize the problematic DRAM memory reads then overlap. Let us start with two items per iteration:
+Another technique does more memory accesses per iteration. The problematic DRAM memory reads are then optimized by the CPU and they in turn overlap. Let us start with two items per iteration:
 
 ```cpp
 int binarySearch_duo(size_t item_count, const Type arr[], int search)
@@ -73,4 +73,4 @@ In order to avoid algorithm pitfalls that come from cutting the interval in thre
 
 ## Conclusion
 
-Using the algorithm reading two items per iteration we obtain a solution that is 25% faster than the original one. Reading three items per iteration improve the original algorithm by 33% on our computer. This type of optimization is obviously hardware specific and it can not be done infinitely. However, as we can see the improvement of such a basic algorithm can be more than insignificant.
+Using the algorithm reading two items per iteration we obtain a solution that is 25% faster than the original one. Reading three items per iteration improve the original algorithm by 33% on our computer. This type of optimization is obviously hardware specific and it can not be done infinitely. However, as we can see the improvement of such a simple algorithm can be quite significant.
