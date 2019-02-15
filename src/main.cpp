@@ -56,7 +56,8 @@ int binarySearch_basic(size_t item_count, const Type arr[], int search)
 	return -1;
 }
 
-int binarySearch_prefetch(size_t item_count, const Type arr[], int search)
+
+int binarySearch_reordered(size_t item_count, const Type arr[], int search)
 {
 	int l = 0;
 	int r = item_count - 1;
@@ -64,109 +65,22 @@ int binarySearch_prefetch(size_t item_count, const Type arr[], int search)
 
 		int m = l + ((r - l) >> 1);
 
-		// prefetch
-		int m1 = arr[l + ((r - l) >> 2)];
-		int m2 = arr[r - ((r - l) >> 2)];
-
-		if (arr[m] == search)
-		{
-			return m;
-		}
-
 		if (arr[m] < search)
 		{
 			l = m + 1;
 		}
-		else
-		{
-			r = m - 1;
-		}
-	}
-
-	// if we reach here, then element was 
-	// not present 
-	return -1;
-}
-
-
-int binarySearch_duo(size_t item_count, const Type arr[], int search)
-{
-	int l = 0;
-	int r = item_count - 1;
-	while (r - l > 7) {
-
-		int delta = (r - l) / 3;
-		int m1 = l + delta;
-		int m2 = r - delta;
-
-		if (arr[m1] == search) return m1;
-		if (arr[m2] == search) return m2;
-
-		if (arr[m1] < search) {
-			if (arr[m2] < search) {
-				l = m2 + 1;
-			}
-			else {
-				r = m2 - 1;
-				l = m1 + 1;
-			}
-		}
 		else {
-			r = m1 - 1;
-		}
-	}
-
-	for (int i = l; i <= r; i++)
-	{
-		if (arr[i] == search) return i;
-	}
-
-	return -1;
-}
-
-int binarySearch_trio(size_t item_count, const Type arr[], int search)
-{
-	int l = 0;
-	int r = item_count - 1;
-	while (r - l > 7) {
-
-		int delta = (r - l) >> 2;
-		int m1 = l + delta;
-		int m2 = l + (delta << 1);
-		int m3 = r - delta;
-
-		if (arr[m1] == search) return m1;
-		if (arr[m2] == search) return m2;
-		if (arr[m3] == search) return m3;
-
-		if (arr[m2] < search) {
-			if (arr[m3] < search) {
-				l = m3 + 1;
+			if (arr[m] == search) {
+				return m;
 			}
 			else {
-				r = m3 - 1;
-				l = m2 + 1;
-			}
-		} else {
-			if (arr[m1] < search) {
-				l = m1 + 1;
-				r = m2 - 1;
-			}
-			else {
-				r = m1 - 1;
+				r = m - 1;
 			}
 		}
 	}
 
-	for (int i = l; i <= r; i++)
-	{
-		if (arr[i] == search) return i;
-	}
-
 	return -1;
 }
-
-
 
 
 int main()
@@ -207,10 +121,10 @@ int main()
 	result3.reserve(test.size());
 #endif
 
-	int(*f[4])(size_t, const Type*, int) = { &binarySearch_prefetch, &binarySearch_duo, &binarySearch_trio, &binarySearch_basic };
-	std::vector<std::string> algo = { "Prefetch", "Duo", "Trio", "Basic" };
+	int(*f[2])(size_t, const Type*, int) = { &binarySearch_basic, &binarySearch_reordered };
+	std::vector<std::string> algo = { "Basic", "Reordered" };
 
-	for (auto fn = 0; fn < 4; fn++)
+	for (auto fn = 0; fn < 2; fn++)
 	{
 		auto ff = f[fn];
 		const auto t1 = std::chrono::steady_clock::now();
